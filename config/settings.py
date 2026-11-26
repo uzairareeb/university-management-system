@@ -69,11 +69,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE_URL set (Supabase) -> Postgres; otherwise local SQLite.
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
+    # Supabase Transaction pooler (PgBouncer) needs server-side cursors off
+    # and no persistent connections; direct connections use conn_max_age=600.
+    _is_pooler = "pooler.supabase.com" in DATABASE_URL
     DATABASES = {
         "default": dj_database_url.parse(
-            DATABASE_URL, conn_max_age=600, ssl_require=True
+            DATABASE_URL, conn_max_age=0 if _is_pooler else 600, ssl_require=True
         )
     }
+    if _is_pooler:
+        DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 else:
     DATABASES = {
         "default": {
