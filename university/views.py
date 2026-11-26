@@ -44,7 +44,7 @@ def home(request):
             "departments": list(Department.objects.all()[:6]),
             "featured_courses": list(
                 Course.objects.select_related("department").annotate(
-                    enrolled_count=Count(
+                    enrolled_total=Count(
                         "enrollments",
                         filter=Q(enrollments__status=Enrollment.ACTIVE),
                     )
