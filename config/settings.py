@@ -65,6 +65,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# CACHE --------------------------------------------------------------------
+# In-process cache (per serverless instance): home/about data is cached
+# for 5 minutes so repeat visits skip the slow cross-region DB queries.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "ums-cache",
+    }
+}
+
 # DATABASE -----------------------------------------------------------------
 # DATABASE_URL set (Supabase) -> Postgres; otherwise local SQLite.
 DATABASE_URL = os.environ.get("DATABASE_URL")

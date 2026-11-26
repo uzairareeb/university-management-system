@@ -28,23 +28,42 @@ from .models import (
 # PUBLIC SITE
 # ==========================================================================
 def home(request):
-    ctx = {
-        "stats": {
-            "students": StudentProfile.objects.count(),
-            "faculty": FacultyProfile.objects.count(),
-            "courses": Course.objects.count(),
-            "departments": Department.objects.count(),
-        },
-        "departments": Department.objects.all()[:6],
-        "featured_courses": Course.objects.select_related("department")[:6],
-        "events": Event.objects.filter(date__gte=date.today())[:3],
-    }
+    from django.core.cache import cache
+
+    ctx = cache.get("home_data_v1")
+    if ctx is None:
+        # One annotated query instead of a count query per course
+        # (enrolled_count was a property = 1 query per course).
+        ctx = {
+            "stats": {
+                "students": StudentProfile.objects.count(),
+                "faculty": FacultyProfile.objects.count(),
+                "courses": Course.objects.count(),
+                "departments": Department.objects.count(),
+            },
+            "departments": list(Department.objects.all()[:6]),
+            "featured_courses": list(
+                Course.objects.select_related("department").annotate(
+                    enrolled_count=Count(
+                        "enrollments",
+                        filter=Q(enrollments__status=Enrollment.ACTIVE),
+                    )
+                )[:6]
+            ),
+        }
+        cache.set("home_data_v1", ctx, 300)
     return render(request, "site/home.html", ctx)
 
 
 def about(request):
+    from django.core.cache import cache
+
+    departments = cache.get("about_departments_v1")
+    if departments is None:
+        departments = list(Department.objects.all())
+        cache.set("about_departments_v1", departments, 300)
     return render(request, "site/about.html", {
-        "departments": Department.objects.all(),
+        "departments": departments,
     })
 
 

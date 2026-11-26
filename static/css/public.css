@@ -82,7 +82,7 @@ body.public-theme{
   color:#fff;overflow:hidden;
   background:
     linear-gradient(100deg,rgba(16,29,43,.96) 0%,rgba(16,29,43,.85) 32%,rgba(16,29,43,.35) 60%,rgba(16,29,43,0) 78%),
-    url('../img/hero-graduate.png');
+    url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70');
   background-size:cover;background-position:right top;
 }
 .pub-hero::after{
