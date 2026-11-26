@@ -1,1 +1,0 @@
-{"buildCommand":"python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_demo","functions":{"api/index.py":{"maxDuration":60}},"rewrites":[{"destination":"/api/index.py","source":"/(.*)"}]}
