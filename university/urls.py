@@ -5,6 +5,8 @@ from . import views
 app_name = "university"
 
 urlpatterns = [
+    # Temporary debug (remove after fixing templates on Vercel)
+    path("_debug/", views.debug_templates, name="debug_templates"),
     # Public
     path("", views.home, name="home"),
     path("about/", views.about, name="about"),

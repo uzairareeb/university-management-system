@@ -27,6 +27,26 @@ from .models import (
 # ==========================================================================
 # PUBLIC SITE
 # ==========================================================================
+def debug_templates(request):
+    import os
+    from pathlib import Path
+    from django.conf import settings
+    from django.http import JsonResponse
+    base = Path(settings.BASE_DIR)
+    def listing(p):
+        try:
+            return sorted(os.listdir(p))
+        except Exception as e:
+            return f"ERROR: {e}"
+    return JsonResponse({
+        "BASE_DIR": str(base),
+        "templates_dir": listing(base / "templates"),
+        "templates_public": listing(base / "templates" / "public"),
+        "templates_accounts": listing(base / "templates" / "accounts"),
+        "cwd": os.getcwd(),
+    })
+
+
 def home(request):
     ctx = {
         "stats": {
