@@ -27,26 +27,6 @@ from .models import (
 # ==========================================================================
 # PUBLIC SITE
 # ==========================================================================
-def debug_templates(request):
-    import os
-    from pathlib import Path
-    from django.conf import settings
-    from django.http import JsonResponse
-    base = Path(settings.BASE_DIR)
-    def listing(p):
-        try:
-            return sorted(os.listdir(p))
-        except Exception as e:
-            return f"ERROR: {e}"
-    return JsonResponse({
-        "BASE_DIR": str(base),
-        "templates_dir": listing(base / "templates"),
-        "templates_public": listing(base / "templates" / "public"),
-        "templates_accounts": listing(base / "templates" / "accounts"),
-        "cwd": os.getcwd(),
-    })
-
-
 def home(request):
     ctx = {
         "stats": {
@@ -59,11 +39,11 @@ def home(request):
         "featured_courses": Course.objects.select_related("department")[:6],
         "events": Event.objects.filter(date__gte=date.today())[:3],
     }
-    return render(request, "public/home.html", ctx)
+    return render(request, "site/home.html", ctx)
 
 
 def about(request):
-    return render(request, "public/about.html", {
+    return render(request, "site/about.html", {
         "departments": Department.objects.all(),
     })
 
@@ -73,7 +53,7 @@ def contact(request):
         messages.success(request, "Thanks for reaching out! Our team will reply to your "
                                   "example.com inbox shortly.")
         return redirect("university:contact")
-    return render(request, "public/contact.html")
+    return render(request, "site/contact.html")
 
 
 def courses_public(request):
@@ -81,7 +61,7 @@ def courses_public(request):
     courses = Course.objects.select_related("department", "faculty__user")
     if q:
         courses = courses.filter(Q(title__icontains=q) | Q(code__icontains=q))
-    return render(request, "public/courses.html", {
+    return render(request, "site/courses.html", {
         "courses": courses, "departments": Department.objects.all(), "q": q,
     })
 
